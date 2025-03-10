@@ -1,0 +1,104 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load Dataset
+df = pd.read_csv("loan_detection.csv")
+
+# Data Preprocessing for Model Training
+X = df.drop(columns=["Loan_Status_label"])  # Feature variables
+y = df["Loan_Status_label"]  # Target variable
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Model Training using Random Forest Classifier
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Model Predictions
+y_pred = model.predict(X_test)
+
+# Model Evaluation
+accuracy = accuracy_score(y_test, y_pred)
+print("Model Accuracy:", accuracy)
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+# Function to Predict Loan Approval
+def predict_loan_approval(user_input):
+    """
+    Takes user input as a dictionary matching the dataset columns (except target) 
+    and predicts whether the loan will be approved or not.
+    """
+    input_df = pd.DataFrame([user_input])
+    prediction = model.predict(input_df)[0]
+    return "Approved" if prediction == 1 else "Rejected"
+
+# Example User Input (Modify as needed)
+example_input = {
+    "age": 35,
+    "campaign": 2,
+    "pdays": 999,
+    "previous": 0,
+    "no_previous_contact": 1,
+    "not_working": 0,
+    "job_admin.": 1,
+    "job_blue-collar": 0,
+    "job_entrepreneur": 0,
+    "job_housemaid": 0,
+    "job_management": 0,
+    "job_retired": 0,
+    "job_self-employed": 0,
+    "job_services": 0,
+    "job_student": 0,
+    "job_technician": 0,
+    "job_unemployed": 0,
+    "job_unknown": 0,
+    "marital_divorced": 0,
+    "marital_married": 1,
+    "marital_single": 0,
+    "marital_unknown": 0,
+    "education_basic.4y": 0,
+    "education_basic.6y": 0,
+    "education_basic.9y": 0,
+    "education_high.school": 1,
+    "education_illiterate": 0,
+    "education_professional.course": 0,
+    "education_university.degree": 0,
+    "education_unknown": 0,
+    "default_no": 1,
+    "default_unknown": 0,
+    "default_yes": 0,
+    "housing_no": 1,
+    "housing_unknown": 0,
+    "housing_yes": 0,
+    "loan_no": 1,
+    "loan_unknown": 0,
+    "loan_yes": 0,
+    "contact_cellular": 1,
+    "contact_telephone": 0,
+    "month_apr": 0,
+    "month_aug": 0,
+    "month_dec": 0,
+    "month_jul": 0,
+    "month_jun": 0,
+    "month_mar": 0,
+    "month_may": 1,
+    "month_nov": 0,
+    "month_oct": 0,
+    "month_sep": 0,
+    "day_of_week_fri": 0,
+    "day_of_week_mon": 1,
+    "day_of_week_thu": 0,
+    "day_of_week_tue": 0,
+    "day_of_week_wed": 0,
+    "poutcome_failure": 0,
+    "poutcome_nonexistent": 1,
+    "poutcome_success": 0
+}
+
+# Predicting Loan Approval for Example Input
+result = predict_loan_approval(example_input)
+print("Loan Prediction for Example Input:", result)
